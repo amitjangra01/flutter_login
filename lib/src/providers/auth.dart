@@ -60,10 +60,14 @@ class Auth with ChangeNotifier {
     String confirmPassword = '',
     AuthMode initialAuthMode = AuthMode.login,
     this.termsOfService = const [],
+    String phone = '',
+    String otp = '',
   })  : _email = email,
         _password = password,
         _confirmPassword = confirmPassword,
-        _mode = initialAuthMode;
+        _mode = initialAuthMode,
+        _phone = phone,
+        _otp = otp;
 
   final LoginCallback? onLogin;
   final SignupCallback? onSignup;
@@ -141,5 +145,19 @@ class Auth with ChangeNotifier {
     return termsOfService
         .map((e) => TermOfServiceResult(term: e, accepted: e.checked))
         .toList();
+  }
+
+  String _phone = '';
+  String get phone => _phone;
+  set phone(String phone) {
+    _phone = phone;
+    notifyListeners();
+  }
+
+  String _otp = '';
+  String get otp => _otp;
+  set otp(String otp) {
+    _otp = otp;
+    notifyListeners();
   }
 }

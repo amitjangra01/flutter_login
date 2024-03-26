@@ -50,6 +50,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
+      userType: LoginUserType.phone,
       title: Constants.appName,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       logo: const AssetImage('assets/images/ecorp.png'),
@@ -80,6 +81,7 @@ class LoginScreen extends StatelessWidget {
         ),
         LoginProvider(
           icon: FontAwesomeIcons.githubAlt,
+          label: 'Github',
           callback: () async {
             debugPrint('start github sign in');
             await Future.delayed(loginTime);
@@ -234,6 +236,20 @@ class LoginScreen extends StatelessWidget {
       passwordValidator: (value) {
         if (value!.isEmpty) {
           return 'Password is empty';
+        }
+        return null;
+      },
+      phoneValidator: (value) {
+        if (value!.isEmpty) {
+          return 'Number is empty';
+        } else if (value.length < 10) {
+          return 'Phone number is invalid';
+        }
+        return null;
+      },
+      otpValidator: (value) {
+        if (value!.isEmpty) {
+          return 'OTP is empty';
         }
         return null;
       },

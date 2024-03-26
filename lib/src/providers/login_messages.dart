@@ -36,6 +36,8 @@ class LoginMessages with ChangeNotifier {
     this.setPasswordButton = defaultSetPasswordButton,
     this.confirmRecoverSuccess = defaultConfirmRecoverSuccess,
     this.recoverCodePasswordDescription = defaultRecoverCodePasswordDescription,
+    this.phoneHint = defaultPhoneHint,
+    this.otpHint = defaultOtpHint,
   });
 
   static const defaultPasswordHint = 'Password';
@@ -77,6 +79,11 @@ class LoginMessages with ChangeNotifier {
   static const defaultResendCodeSuccess = 'A new email has been sent.';
   static const defaultConfirmSignupButton = 'CONFIRM';
   static const defaultConfirmSignupSuccess = 'Account confirmed.';
+  static const defaultPhoneHint = 'Mobile Number';
+  static const defaultOtpHint = 'OTP';
+
+  final String phoneHint;
+  final String otpHint;
 
   /// Hint text of the userHint [TextField]
   /// Default will be selected based on userType

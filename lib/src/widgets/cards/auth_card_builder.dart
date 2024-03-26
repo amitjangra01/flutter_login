@@ -54,6 +54,9 @@ class AuthCard extends StatefulWidget {
     this.introWidget,
     required this.initialIsoCode,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    required this.loginWithPhone,
+    this.phoneValidator,
+    this.otpValidator,
   });
 
   final EdgeInsets padding;
@@ -82,6 +85,10 @@ class AuthCard extends StatefulWidget {
   final TextInputType? confirmSignupKeyboardType;
   final Widget? introWidget;
   final String? initialIsoCode;
+
+  final bool loginWithPhone;
+  final FormFieldValidator<String>? phoneValidator;
+  final FormFieldValidator<String>? otpValidator;
 
   @override
   AuthCardState createState() => AuthCardState();
@@ -358,6 +365,9 @@ class AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
           theme: Theme.of(context),
           child: _LoginCard(
             key: _loginCardKey,
+            loginWithPhone: widget.loginWithPhone,
+            phoneValidator: widget.phoneValidator,
+            otpValidator: widget.otpValidator,
             userType: widget.userType,
             loadingController: formController,
             userValidator: widget.userValidator,

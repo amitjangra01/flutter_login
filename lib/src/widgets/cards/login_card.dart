@@ -23,10 +23,15 @@ class _LoginCard extends StatefulWidget {
     this.hideProvidersTitle = false,
     this.introWidget,
     required this.initialIsoCode,
+    required this.loginWithPhone,
+    required this.phoneValidator,
+    required this.otpValidator,
   });
 
   final AnimationController loadingController;
   final FormFieldValidator<String>? userValidator;
+  final FormFieldValidator<String>? phoneValidator;
+  final FormFieldValidator<String>? otpValidator;
   final bool? validateUserImmediately;
   final FormFieldValidator<String>? passwordValidator;
   final VoidCallback onSwitchRecoveryPassword;
@@ -42,6 +47,7 @@ class _LoginCard extends StatefulWidget {
   final Future<bool> Function() requireSignUpConfirmation;
   final Widget? introWidget;
   final String? initialIsoCode;
+  final bool loginWithPhone;
 
   @override
   _LoginCardState createState() => _LoginCardState();
@@ -51,13 +57,19 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   final _userFieldKey = GlobalKey<FormFieldState>();
+  final _phoneFieldKey = GlobalKey<FormFieldState>();
+  final _otpFielddKey = GlobalKey<FormFieldState>();
   final _userFocusNode = FocusNode();
+  final _phoneFocusNode = FocusNode();
+  final _otpFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
 
   late TextEditingController _nameController;
   late TextEditingController _passController;
   late TextEditingController _confirmPassController;
+  late TextEditingController _phoneController;
+  late TextEditingController _otPController;
 
   var _isLoading = false;
   var _isSubmitting = false;
@@ -86,6 +98,8 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
     _nameController = TextEditingController(text: auth.email);
     _passController = TextEditingController(text: auth.password);
     _confirmPassController = TextEditingController(text: auth.confirmPassword);
+    _phoneController = TextEditingController(text: auth.phone);
+    _otPController = TextEditingController(text: auth.otp);
 
     widget.loadingController.addStatusListener(handleLoadingAnimationStatus);
 
@@ -392,6 +406,60 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       },
       validator: widget.userValidator,
       onSaved: (value) => auth.email = value!,
+      enabled: !_isSubmitting,
+      initialIsoCode: widget.initialIsoCode,
+    );
+  }
+
+  Widget _buildPhoneField(
+    double width,
+    LoginMessages messages,
+    Auth auth,
+  ) {
+    return AnimatedTextFormField(
+      textFormFieldKey: _phoneFieldKey,
+      userType: widget.userType,
+      controller: _phoneController,
+      width: width,
+      loadingController: widget.loadingController,
+      interval: _nameTextFieldLoadingAnimationInterval,
+      labelText: messages.phoneHint,
+      autofillHints: _isSubmitting ? null : [getAutofillHints(widget.userType)],
+      prefixIcon: getPrefixIcon(widget.userType),
+      keyboardType: getKeyboardType(widget.userType),
+      textInputAction: TextInputAction.next,
+      focusNode: _phoneFocusNode,
+      onFieldSubmitted: (value) {
+        FocusScope.of(context).requestFocus(_otpFocusNode);
+      },
+      validator: widget.phoneValidator,
+      onSaved: (value) => auth.email = value!,
+      enabled: !_isSubmitting,
+      initialIsoCode: widget.initialIsoCode,
+    );
+  }
+
+  Widget _buildOtpField(
+    double width,
+    LoginMessages messages,
+    Auth auth,
+  ) {
+    return AnimatedTextFormField(
+      textFormFieldKey: _otpFielddKey,
+      userType: widget.userType,
+      controller: _otPController,
+      width: width,
+      loadingController: widget.loadingController,
+      interval: _nameTextFieldLoadingAnimationInterval,
+      labelText: messages.otpHint,
+      autofillHints: _isSubmitting ? null : [getAutofillHints(widget.userType)],
+      prefixIcon: getPrefixIcon(widget.userType),
+      keyboardType: getKeyboardType(widget.userType),
+      textInputAction: TextInputAction.next,
+      focusNode: _otpFocusNode,
+      onFieldSubmitted: (value) {},
+      validator: widget.otpValidator,
+      onSaved: (value) => auth.otp = value!,
       enabled: !_isSubmitting,
       initialIsoCode: widget.initialIsoCode,
     );
@@ -715,10 +783,17 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   if (widget.introWidget != null) widget.introWidget!,
-                  _buildUserField(textFieldWidth, messages, auth),
-                  const SizedBox(height: 20),
-                  _buildPasswordField(textFieldWidth, messages, auth),
-                  const SizedBox(height: 10),
+                  if (widget.loginWithPhone) ...[
+                    _buildPhoneField(textFieldWidth, messages, auth),
+                    const SizedBox(height: 20),
+                    _buildOtpField(textFieldWidth, messages, auth),
+                  ],
+                  if (!widget.loginWithPhone) ...[
+                    _buildUserField(textFieldWidth, messages, auth),
+                    const SizedBox(height: 20),
+                    _buildPasswordField(textFieldWidth, messages, auth),
+                    const SizedBox(height: 10),
+                  ]
                 ],
               ),
             ),
